@@ -534,6 +534,16 @@ class MOLNSController(MOLNSbase):
             fd.write(client_file_data)
         print "Success"
 
+#Added restart functionality
+    @classmethod
+    def restart_controller(cls, args, config, password=None):
+        """ Should restart the controller. """
+        logging.debug("MOLNSController.restart_controller(args={0})".format(args))
+        if len(args) == 0:
+            raise MOLNSException("USAGE: molns controller restart [name]")
+        cls.stop_controller(args, config)
+        cls.start_controller(args, config)
+        
 
 ###############################################
 
@@ -1410,6 +1420,8 @@ COMMAND_LIST = [
                 function=MOLNSController.show_controller),
             Command('delete', {'name':None},
                 function=MOLNSController.delete_controller),
+            Command('restart', {'name':None},
+                function=MOLNSController.restart_controller),
             Command('export',{'name':None},
                 function=MOLNSController.controller_export),
             Command('import',{'filename.json':None},
