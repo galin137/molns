@@ -350,24 +350,24 @@ class OpenStackProvider(OpenStackBase):
             logging.exception(e)
             raise ProviderException("Could not delete floating ip '{0}'".format(ip))
 
- #Allocate ip to tenant if existing otherwise create a new one
+    def get_existing_ip(self):
+        ipOut = None
+        ips = self.nove.floating_ips.list()
+        for ip in ips:
+            if ip.fixed_ip == None:
+                ipOut = ip
+                break
+        return ipOut
 
+ #Allocate ip to tenant if existing otherwise create a new one
     def _attach_floating_ip(self, instance):
        # Try to attach a floating IP to the controller
         logging.info("Attaching floating ip to the server...")
            #If existing allocate it otherwise create a new one
         try:
-            floating_ip_list = self.nova.floating_ips.list()
-            floating_ip = None
-            for fips in floating_ip_list:
-                if fips.instance_id == None:
-                    floating_ip = fips.ip
-                    break
-
-            if floating_ip == None: 
-                #Have to create fip no free one existing
+            floating_ip = self.get_existing_ip()
+            if not floating_ip:
                 floating_ip = self.nova.floating_ips.create(self.config['floating_ip_pool'])
-            
             instance.add_floating_ip(floating_ip)
             logging.debug("ip={0}".format(floating_ip.ip))
             return floating_ip.ip

@@ -439,6 +439,15 @@ class MOLNSController(MOLNSbase):
         sshdeploy.deploy_molns_webserver(inst.ip_address)
         #sshdeploy.deploy_stochss(inst.ip_address, port=443)
 
+
+        @classmethod
+        def restart_controller(cls, args, config):
+            """ information. """
+            cls.stop_controller(args, config)
+            cls.start_controller(args, config)
+
+
+
     @classmethod
     def stop_controller(cls, args, config):
         """ Stop the head node of a MOLNs controller. """
@@ -1436,6 +1445,8 @@ COMMAND_LIST = [
                 function=MOLNSWorkerGroup.delete_worker_groups),
             Command('start', {'name':None},
                 function=MOLNSWorkerGroup.start_worker_groups),
+            Command('restart',{'name':None},
+                function=MOLNSController.restart_controller),
             Command('add', {'name':None},
                 function=MOLNSWorkerGroup.add_worker_groups),
             Command('status', {'name':None},
